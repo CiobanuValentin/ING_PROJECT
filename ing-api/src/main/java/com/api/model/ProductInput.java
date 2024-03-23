@@ -15,9 +15,6 @@ import javax.validation.constraints.Size;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductInput {
 
-    @JsonProperty("id")
-    private int id;
-
     @NotNull(message = "Name field can not be null!")
     @Size(min = 2, max = 255, message = "Name must be between 2 and 255 characters long!")
     @JsonProperty("name")

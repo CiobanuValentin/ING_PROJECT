@@ -8,6 +8,7 @@ import com.api.repository.ProductRepository;
 import com.util.exceptions.ApiException;
 import com.internationalization.Messages;
 import com.util.enums.HTTPCustomStatus;
+import com.util.web.JsonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +25,6 @@ public class ProductService {
     @Autowired
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
-    }
-
-    @Transactional
-    public ProductJSON saveOrUpdateProduct(ProductInput input) {
-        Product product = ProductMapper.inputToProduct(input);
-        product.setId(input.getId()); // if it is 0 it adds, if it is an existing id, it updates
-        Product savedProduct = productRepository.save(product);
-        return ProductMapper.productToJson(savedProduct);
     }
 
     @Transactional
