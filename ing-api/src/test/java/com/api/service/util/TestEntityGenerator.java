@@ -3,6 +3,7 @@ package com.api.service.util;
 import com.api.entities.Product;
 import com.api.model.ProductInput;
 import com.api.output.ProductJSON;
+import com.util.web.JsonResponse;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +54,13 @@ public class TestEntityGenerator {
                 .price(10.99)
                 .description("Sample description")
                 .build();
+    }
+
+    public static JsonResponse generateExpectedDeleteResponse() {
+        return new JsonResponse()
+                .with("Status", "ok")
+                .with("message", "Product was successfully deleted!")
+                .done();
     }
 
     private static String formatOffsetDateTime(OffsetDateTime offsetDateTime) {
