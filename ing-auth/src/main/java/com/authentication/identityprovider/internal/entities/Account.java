@@ -49,6 +49,9 @@ public class Account {
     @Column(name = "password")
     private String password;
 
+    @OneToMany(mappedBy = "account")
+    private List<AccountPermission> permissions;
+
 
     public Account(String email,  String userKey,String firstName, String lastName,  String phone) {
         this.email = email;

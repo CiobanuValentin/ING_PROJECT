@@ -33,8 +33,8 @@ public class AccessToken {
     @JsonProperty("expireIn")
     private long expiresIn;
 
-    @JsonProperty("expireDate")
-    private Date expireAt;
+//    @JsonProperty("expireDate")
+//    private Date expireAt;
 
     @JsonProperty("refreshToken")
     private String refreshToken;

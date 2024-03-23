@@ -2,25 +2,27 @@ package com.authentication.service;
 
 
 import com.authentication.channel.AccessChannel;
-import com.authentication.oauth2.PrivateClaims;
+import com.authentication.exceptions.codes.ErrorCode;
 import com.authentication.identityprovider.AuthenticationProvider;
 import com.authentication.identityprovider.IdentityProviders;
 import com.authentication.identityprovider.internal.entities.Account;
-import com.authentication.exceptions.codes.ErrorCode;
+import com.authentication.identityprovider.internal.entities.AccountPermission;
+import com.authentication.identityprovider.internal.entities.AuthPermission;
+import com.authentication.identityprovider.internal.model.PasswordInput;
 import com.authentication.identityprovider.internal.model.ResetPasswordInput;
 import com.authentication.identityprovider.internal.repository.AccountRepository;
 import com.authentication.identityprovider.internal.service.AccountService;
-import com.authentication.identityprovider.internal.model.PasswordInput;
 import com.authentication.oauth2.OAuth2Constants;
+import com.authentication.oauth2.PrivateClaims;
+import com.authentication.request.AuthRequest;
 import com.authentication.request.TokenRequest;
-import com.util.date.DateUtil;
-import com.util.password.PasswordException;
+import com.authentication.response.AccessToken;
 import com.internationalization.Messages;
+import com.util.date.DateUtil;
 import com.util.enums.HTTPCustomStatus;
 import com.util.exceptions.ApiException;
 import com.util.exceptions.ServiceException;
-import com.authentication.request.AuthRequest;
-import com.authentication.response.AccessToken;
+import com.util.password.PasswordException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -81,7 +84,12 @@ public class AuthenticationService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = now.plus(30, ChronoUnit.DAYS);
 
-        return getAccessToken(now, expirationTime, privateClaimMap, permissionsClaim(), account.isActive(), account.getEmail());
+        List<AuthPermission> permissions = account.getPermissions()
+                .stream()
+                .map(AccountPermission::getAuthPermission)
+                .collect(Collectors.toList());
+
+        return getAccessToken(now, expirationTime, privateClaimMap, permissionsClaim(permissions), account.isActive(), account.getEmail());
     }
 
 
@@ -101,11 +109,19 @@ public class AuthenticationService {
         return privateClaimMap;
     }
 
-    private static Map<String, String[]> permissionsClaim() {
+    private static Map<String, String[]> permissionsClaim(List<AuthPermission> permissions) {
         Map<String, String[]> privateClaimListMap = new HashMap<>();
-        privateClaimListMap.put(PrivateClaims.PERMISSIONS.getType(), Collections.singletonList("read:user").toArray(new String[0]));
+        List<String> stringPermissions = permissions.stream()
+                .map(permission -> permission.getAction() + ":" + permission.getSubject())
+                .collect(Collectors.toList());
+        stringPermissions.addAll(getAccountDefaultPermissions());
 
+        privateClaimListMap.put(PrivateClaims.PERMISSIONS.getType(), stringPermissions.stream().distinct().toArray(String[]::new));
         return privateClaimListMap;
+    }
+
+    private static List<String> getAccountDefaultPermissions() {
+        return Arrays.asList("read:user");
     }
 
     private AccessToken getAccessToken(LocalDateTime now, LocalDateTime expirationTime, Map<String, String> privateClaimMap, Map<String, String[]> privateClaimTypeAndStringArray, boolean active, String email) {
@@ -115,7 +131,7 @@ public class AuthenticationService {
                 .tokenType(OAuth2Constants.BEARER_TYPE)
                 .active(active)
                 .refreshToken(tokenService.getRefreshToken(email))
-                .expireAt(DateUtil.convertToDateViaSqlDate(expirationTime.toLocalDate()))
+//                .expireAt(DateUtil.convertToDateViaSqlDate(expirationTime.toLocalDate()))
                 .expiresIn(Period.between(now.toLocalDate(), expirationTime.toLocalDate()).getDays())
                 .expiresIn(ChronoUnit.SECONDS.between(now, expirationTime))
                 .build();
@@ -145,7 +161,12 @@ public class AuthenticationService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = now.plus(30, ChronoUnit.DAYS);
 
-        return getAccessToken(now, expirationTime, privateClaimMap, permissionsClaim(), account.isActive(), account.getEmail());
+        List<AuthPermission> permissions = account.getPermissions()
+                .stream()
+                .map(AccountPermission::getAuthPermission)
+                .collect(Collectors.toList());
+
+        return getAccessToken(now, expirationTime, privateClaimMap, permissionsClaim(permissions), account.isActive(), account.getEmail());
     }
 
     @Transactional
