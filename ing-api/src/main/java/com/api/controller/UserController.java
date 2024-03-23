@@ -112,7 +112,7 @@ public class UserController {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = UserJSON.class)))
             })
-    @Anonymous
+    @PreAuthorize("hasRole('administrator')")
     public ResponseEntity<Serializable> createUser(@RequestBody @Valid AssignationInput assignationInput, HttpServletRequest request) throws GeneralSecurityException {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
