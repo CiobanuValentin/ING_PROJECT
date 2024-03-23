@@ -1,6 +1,7 @@
 package com.api.controller;
 
 import com.api.config.Anonymous;
+import com.api.model.AssignationInput;
 import com.api.model.RoleInput;
 import com.api.output.RoleJSON;
 import com.api.output.Response;
@@ -8,6 +9,7 @@ import com.api.service.RoleService;
 import com.exception.ExceptionHandler;
 import com.util.async.Computation;
 import com.util.async.ExecutorsProvider;
+import com.util.web.SmartLocaleResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,6 +41,8 @@ public class RoleController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RoleController.class);
 
     private final RoleService roleService;
+
+    private final SmartLocaleResolver smartLocaleResolver;
 
 
     @GetMapping(value = "roles", produces = {"application/json"})
@@ -72,6 +76,23 @@ public class RoleController {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
         return Computation.computeAsync(() -> (Serializable)roleService.addRole(roleInput), executorService)
+                .thenApplyAsync(Response::created, executorService)
+                .exceptionally(error -> ExceptionHandler.handleException((CompletionException) error))
+                .join();
+    }
+
+    @PostMapping(value = "role/permission/assign", consumes = {"application/json"}, produces = {"application/json"})
+    @Operation(summary = "Create role",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Return json with ok if successfully assigned permission to role",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = RoleJSON.class)))
+            })
+    @Anonymous
+    public ResponseEntity<Serializable> assignPermission(@RequestBody @Valid AssignationInput assignationInput, HttpServletRequest request) throws GeneralSecurityException {
+
+        ExecutorService executorService = ExecutorsProvider.getExecutorService();
+        return Computation.computeAsync(() -> (Serializable)roleService.assignPermission(assignationInput,  smartLocaleResolver.resolveLocale(request)), executorService)
                 .thenApplyAsync(Response::created, executorService)
                 .exceptionally(error -> ExceptionHandler.handleException((CompletionException) error))
                 .join();
