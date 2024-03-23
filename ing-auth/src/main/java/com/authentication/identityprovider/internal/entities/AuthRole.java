@@ -4,6 +4,7 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Builder
 @Getter
@@ -20,6 +21,9 @@ public class AuthRole {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.PERSIST)
+    private List<AuthRolePermission> rolePermissionList;
 
     @PrePersist
     private void generateId() {

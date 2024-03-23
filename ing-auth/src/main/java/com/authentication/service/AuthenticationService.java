@@ -8,6 +8,7 @@ import com.authentication.identityprovider.IdentityProviders;
 import com.authentication.identityprovider.internal.entities.Account;
 import com.authentication.identityprovider.internal.entities.AccountPermission;
 import com.authentication.identityprovider.internal.entities.AuthPermission;
+import com.authentication.identityprovider.internal.entities.AuthRolePermission;
 import com.authentication.identityprovider.internal.model.PasswordInput;
 import com.authentication.identityprovider.internal.model.ResetPasswordInput;
 import com.authentication.identityprovider.internal.repository.AccountRepository;
@@ -101,6 +102,13 @@ public class AuthenticationService {
                 .map(AccountPermission::getAuthPermission)
                 .collect(Collectors.toList());
 
+        List<AuthPermission> rolePermissions = account.getRoles()
+                .stream()
+                .flatMap(accountRole -> accountRole.getAuthRole().getRolePermissionList().stream())
+                .map(AuthRolePermission::getPermission)
+                .collect(Collectors.toList());
+        permissions.addAll(rolePermissions);
+
         return getAccessToken(now, expirationTime, privateClaimMap, permissionsClaim(permissions), account.isActive(), account.getEmail());
     }
 
@@ -188,6 +196,13 @@ public class AuthenticationService {
                 .stream()
                 .map(AccountPermission::getAuthPermission)
                 .collect(Collectors.toList());
+
+        List<AuthPermission> rolePermissions = account.getRoles()
+                .stream()
+                .flatMap(accountRole -> accountRole.getAuthRole().getRolePermissionList().stream())
+                .map(AuthRolePermission::getPermission)
+                .collect(Collectors.toList());
+        permissions.addAll(rolePermissions);
 
         return getAccessToken(now, expirationTime, privateClaimMap, permissionsClaim(permissions), account.isActive(), account.getEmail());
     }
