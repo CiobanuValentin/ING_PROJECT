@@ -84,6 +84,7 @@ public class AuthenticationService {
             roles = account.getRoles()
                     .stream()
                     .map(accountRole -> accountRole.getAuthRole().getName())
+                    .limit(1)
                     .collect(Collectors.toList());
         }
         if(roles == null)
@@ -171,6 +172,7 @@ public class AuthenticationService {
             roles = account.getRoles()
                     .stream()
                     .map(accountRole -> accountRole.getAuthRole().getName())
+                    .limit(1)
                     .collect(Collectors.toList());
         }
         if(roles == null)
