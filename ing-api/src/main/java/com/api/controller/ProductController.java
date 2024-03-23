@@ -163,8 +163,7 @@ public class ProductController {
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
     @Anonymous
-    public ResponseEntity<Serializable> deleteProduct(@RequestBody @Valid ProductInput productInput,
-                                                      @PathParam("id") int id,
+    public ResponseEntity<Serializable> deleteProduct(@PathParam("id") int id,
                                                       HttpServletRequest request) throws GeneralSecurityException {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
