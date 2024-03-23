@@ -29,7 +29,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                         productRoot.get("id"),
                         productRoot.get("name"),
                         productRoot.get("price"),
-                        productRoot.get("description")
+                        productRoot.get("description"),
+//                        productRoot.get("createdAt"),
+//                        productRoot.get("modifiedAt")
+//                        criteriaBuilder.function("FORMATDATETIME", String.class, productRoot.get("createdAt"), criteriaBuilder.literal("yyyy-MM-dd HH:mm:ss")),
+//                        criteriaBuilder.function("FORMATDATETIME", String.class, productRoot.get("modifiedAt"), criteriaBuilder.literal("yyyy-MM-dd HH:mm:ss"))
+                        criteriaBuilder.function("TO_CHAR", String.class, productRoot.get("createdAt"), criteriaBuilder.literal("YYYY-MM-DD HH24:MI:SS")),
+                        criteriaBuilder.function("TO_CHAR", String.class, productRoot.get("modifiedAt"), criteriaBuilder.literal("YYYY-MM-DD HH24:MI:SS"))
+
                 )
         ).where(
                 criteriaBuilder.like(
