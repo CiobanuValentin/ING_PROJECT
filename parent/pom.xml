@@ -17,7 +17,7 @@
     <properties>
         <build.number>SNAPSHOT</build.number>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java-version>1.8</java-version>
+        <java-version>11</java-version>
         <el-api.version>3.0.0</el-api.version>
         <io.swagger.version>1.6.4</io.swagger.version>
         <com.fasterxml.jackson.version>2.12.5</com.fasterxml.jackson.version>

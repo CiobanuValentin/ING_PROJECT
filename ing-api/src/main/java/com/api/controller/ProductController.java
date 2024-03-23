@@ -155,7 +155,7 @@ public class ProductController {
                 .join();
     }
 
-    @DeleteMapping(value = "product/{id}", consumes = {"application/json"}, produces = {"application/json"})
+    @DeleteMapping(value = "product/{id}", produces = {"application/json"})
     @Operation(summary = "Delete product",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Return json with status ok if successfully deleted",
@@ -163,8 +163,7 @@ public class ProductController {
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
     @Anonymous
-    public ResponseEntity<Serializable> deleteProduct(@PathParam("id") int id,
-                                                      HttpServletRequest request) throws GeneralSecurityException {
+    public ResponseEntity<Serializable> deleteProduct(@PathParam("id") Integer id) {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
         return Computation.computeAsync(() -> (Serializable)productService.deleteProduct(id), executorService)
