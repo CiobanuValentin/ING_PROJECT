@@ -1,6 +1,5 @@
 package com.api.controller;
 
-import com.api.config.Anonymous;
 import com.api.model.ProductInput;
 import com.api.model.ProductInput;
 import com.api.output.Response;
@@ -57,15 +56,14 @@ public class ProductController {
     private final SmartLocaleResolver smartLocaleResolver;
 
     @GetMapping(value = "product/{id}", produces = {"application/json"})
-    @Anonymous
     @Operation(summary = "Load product",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Return product if it was successfully found",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
-//    @RolesAllowed({"visitor", "administrator"})
-//    @PreAuthorize("hasAnyRole(@privilegeService.getPrivilegeRoles(\"LOAD.USER\")) AND hasAnyAuthority('PERMISSION_read:product', 'PERMISSION_edit:product')")
+    @RolesAllowed({"visitor", "administrator"})
+    @PreAuthorize("hasRole('administrator') OR hasAnyAuthority('PERMISSION_view:product', 'PERMISSION_edit:product')")
     public ResponseEntity<Serializable> load(@RequestHeader(name = "Authorization", required = false) String authorization,
                                              @PathParam("id") Integer id,
                                              HttpServletRequest request) {
@@ -81,15 +79,14 @@ public class ProductController {
     }
 
     @GetMapping(value = "products", produces = {"application/json"})
-    @Anonymous
     @Operation(summary = "Load all products",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Return the list of all products",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
-//    @RolesAllowed({"visitor", "administrator"})
-//    @PreAuthorize("hasAnyRole(@privilegeService.getPrivilegeRoles(\"LOAD.USER\")) AND hasAnyAuthority('PERMISSION_read:product', 'PERMISSION_edit:product')")
+    @RolesAllowed({"visitor", "administrator"})
+    @PreAuthorize("hasRole('administrator') OR hasAnyAuthority('PERMISSION_view:product', 'PERMISSION_edit:product')")
     public ResponseEntity<Serializable> loadAll(@RequestHeader(name = "Authorization", required = false) String authorization,
                                              HttpServletRequest request) {
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
@@ -100,15 +97,14 @@ public class ProductController {
     }
 
     @GetMapping(value = "products/{input}", produces = {"application/json"})
-    @Anonymous
     @Operation(summary = "Search products",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Return the list of all products containing the given input",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
-//    @RolesAllowed({"visitor", "administrator"})
-//    @PreAuthorize("hasAnyRole(@privilegeService.getPrivilegeRoles(\"LOAD.USER\")) AND hasAnyAuthority('PERMISSION_read:product', 'PERMISSION_edit:product')")
+    @RolesAllowed({"visitor", "administrator"})
+    @PreAuthorize("hasRole('administrator') OR hasAnyAuthority('PERMISSION_view:product', 'PERMISSION_edit:product')")
     public ResponseEntity<Serializable> searchAll(@RequestHeader(name = "Authorization", required = false) String authorization,
                                                   @PathParam("input") String input,
                                                   HttpServletRequest request) {
@@ -126,7 +122,7 @@ public class ProductController {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
-    @Anonymous
+    @PreAuthorize("hasRole('administrator') OR hasAnyAuthority('PERMISSION_create:product')")
     public ResponseEntity<Serializable> createProduct(@RequestBody @Valid ProductInput productInput, HttpServletRequest request) throws GeneralSecurityException {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
@@ -143,7 +139,7 @@ public class ProductController {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
-    @Anonymous
+    @PreAuthorize("hasRole('administrator') OR hasAnyAuthority('PERMISSION_create:product', 'PERMISSION_edit:product')")
     public ResponseEntity<Serializable> updateProduct(@RequestBody @Valid ProductInput productInput,
                                                       @PathParam("id") int id,
                                                       HttpServletRequest request) throws GeneralSecurityException {
@@ -162,7 +158,7 @@ public class ProductController {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
-    @Anonymous
+    @PreAuthorize("hasRole('administrator') OR hasAnyAuthority('PERMISSION_delete:product', 'PERMISSION_edit:product')")
     public ResponseEntity<Serializable> deleteProduct(@PathParam("id") Integer id, HttpServletRequest request) {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
