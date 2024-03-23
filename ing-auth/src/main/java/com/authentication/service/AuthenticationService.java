@@ -78,8 +78,19 @@ public class AuthenticationService {
         }
 
         Account account = accountService.authenticate(authRequest, locale);
+
+        List<String> roles = null;
+        if (account.getRoles() != null) {
+            roles = account.getRoles()
+                    .stream()
+                    .map(accountRole -> accountRole.getAuthRole().getName())
+                    .collect(Collectors.toList());
+        }
+        if(roles == null)
+            roles = Collections.singletonList("visitor");
+
         Map<String, String> privateClaimMap =
-                privateClaims(account.getEmail(), account.isActive(), Collections.singletonList("visitor"));
+                privateClaims(account.getEmail(), account.isActive(), roles);
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = now.plus(30, ChronoUnit.DAYS);
@@ -155,8 +166,18 @@ public class AuthenticationService {
         );
 
 
+        List<String> roles = null;
+        if (account.getRoles() != null) {
+            roles = account.getRoles()
+                    .stream()
+                    .map(accountRole -> accountRole.getAuthRole().getName())
+                    .collect(Collectors.toList());
+        }
+        if(roles == null)
+            roles = Collections.singletonList("visitor");
+
         Map<String, String> privateClaimMap =
-                privateClaims(account.getEmail(), account.isActive(), null);
+                privateClaims(account.getEmail(), account.isActive(), roles);
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = now.plus(30, ChronoUnit.DAYS);
