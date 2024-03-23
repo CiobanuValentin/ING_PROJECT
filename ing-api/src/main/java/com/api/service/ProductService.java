@@ -9,27 +9,34 @@ import com.util.exceptions.ApiException;
 import com.internationalization.Messages;
 import com.util.enums.HTTPCustomStatus;
 import com.util.web.JsonResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import static com.api.config.ClockConfig.UTC_CLOCK;
+
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ProductService {
 
     private final ProductRepository productRepository;
 
-    @Autowired
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    @Qualifier(UTC_CLOCK)
+    private final Clock clock;
 
     @Transactional
     public ProductJSON addProduct(ProductInput input) {
+        final OffsetDateTime now = OffsetDateTime.now(clock);
         Product product = ProductMapper.inputToProduct(input);
+        product.setCreatedAt(now);
         Product savedProduct = productRepository.save(product);
         return ProductMapper.productToJson(savedProduct);
     }
