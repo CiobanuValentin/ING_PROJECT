@@ -3,8 +3,7 @@ package com.api.entities;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 @Builder
 @Getter
@@ -30,10 +29,10 @@ public class Product {
     private String description;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Column(name = "modified_at")
-    private LocalDateTime modifiedAt;
+    private OffsetDateTime modifiedAt;
 
     // Getters and setters
 }
