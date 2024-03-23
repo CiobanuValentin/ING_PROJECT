@@ -139,7 +139,7 @@ public class ProductController {
     @PutMapping(value = "product/{id}", consumes = {"application/json"}, produces = {"application/json"})
     @Operation(summary = "Update product",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Return product if successfully added",
+                    @ApiResponse(responseCode = "200", description = "Return the product if successfully updated",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
