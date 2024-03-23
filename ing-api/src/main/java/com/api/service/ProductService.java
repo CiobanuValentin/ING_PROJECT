@@ -53,8 +53,12 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Integer productId) {
+    public JsonResponse deleteProduct(Integer productId) {
         productRepository.deleteById(productId);
+        return new JsonResponse()
+                .with("Status", "ok")
+                .with("message", "Product was successfully deleted!")
+                .done();
     }
 
     @Transactional
