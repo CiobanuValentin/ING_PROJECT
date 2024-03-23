@@ -26,7 +26,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         criteriaQuery.select(
                 criteriaBuilder.construct(
                         ProductJSON.class,
-                        productRoot.get("name")
+                        productRoot.get("id"),
+                        productRoot.get("name"),
+                        productRoot.get("price"),
+                        productRoot.get("description")
                 )
         ).where(
                 criteriaBuilder.like(
