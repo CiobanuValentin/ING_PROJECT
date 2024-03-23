@@ -63,22 +63,22 @@ public class RoleController {
                 .join();
     }
 
-    @PostMapping(value = "role", consumes = {"application/json"}, produces = {"application/json"})
-    @Operation(summary = "Create role",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Return role if successfully added",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = RoleJSON.class)))
-            })
-    @PreAuthorize("hasRole('administrator')")
-    public ResponseEntity<Serializable> createRole(@RequestBody @Valid RoleInput roleInput, HttpServletRequest request) throws GeneralSecurityException {
-
-        ExecutorService executorService = ExecutorsProvider.getExecutorService();
-        return Computation.computeAsync(() -> (Serializable)roleService.addRole(roleInput), executorService)
-                .thenApplyAsync(Response::created, executorService)
-                .exceptionally(error -> ExceptionHandler.handleException((CompletionException) error))
-                .join();
-    }
+//    @PostMapping(value = "role", consumes = {"application/json"}, produces = {"application/json"})
+//    @Operation(summary = "Create role",
+//            responses = {
+//                    @ApiResponse(responseCode = "200", description = "Return role if successfully added",
+//                            content = @Content(mediaType = "application/json",
+//                                    schema = @Schema(implementation = RoleJSON.class)))
+//            })
+//    @PreAuthorize("hasRole('administrator')")
+//    public ResponseEntity<Serializable> createRole(@RequestBody @Valid RoleInput roleInput, HttpServletRequest request) throws GeneralSecurityException {
+//
+//        ExecutorService executorService = ExecutorsProvider.getExecutorService();
+//        return Computation.computeAsync(() -> (Serializable)roleService.addRole(roleInput), executorService)
+//                .thenApplyAsync(Response::created, executorService)
+//                .exceptionally(error -> ExceptionHandler.handleException((CompletionException) error))
+//                .join();
+//    }
 
     @PostMapping(value = "role/permission/assign", consumes = {"application/json"}, produces = {"application/json"})
     @Operation(summary = "Create role",
