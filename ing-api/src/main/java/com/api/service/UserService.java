@@ -40,7 +40,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final EmailManager emailManager;
     private final PermissionRepository permissionRepository;
+    private final RoleRepository roleRepository;
     private final UserPermissionRepository userPermissionRepository;
+    private final UserRoleRepository userRoleRepository;
 
 
     @Transactional
@@ -101,7 +103,14 @@ public class UserService {
         String uuid = NanoIdUtils.randomNanoId();
         user.setUserKey(uuid);
 
+        Role role = roleRepository.findById("visitor_role_key").orElse(null);
+        if(role != null)
+            user.setRoles(Collections.singletonList(
+                    new UserRole(user, role)
+            ));
+
         userRepository.save(user);
+        userRoleRepository.saveAll(user.getRoles());
         if (user.getId() > 0) {
             logger.debug("Start password hashing");
             String password = PasswordHash.encode(input.getPassword());

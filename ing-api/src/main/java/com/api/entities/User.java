@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Builder
@@ -63,7 +64,8 @@ public class User {
     @Column(name = "password")
     private String password;
 
-
+    @OneToMany(mappedBy = "user")
+    private List<UserRole> roles;
 
     public String getFullName() {
         return Optional.ofNullable(firstName).orElse("") + " " + Optional.ofNullable(lastName).orElse("");
