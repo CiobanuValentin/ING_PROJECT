@@ -14,6 +14,14 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductInput {
+    @Override
+    public String toString() {
+        return "ProductInput{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                '}';
+    }
 
     @NotNull(message = "Name field can not be null!")
     @Size(min = 2, max = 255, message = "Name must be between 2 and 255 characters long!")

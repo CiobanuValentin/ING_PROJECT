@@ -34,5 +34,13 @@ public class Product {
     @Column(name = "modified_at")
     private OffsetDateTime modifiedAt;
 
-    // Getters and setters
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
