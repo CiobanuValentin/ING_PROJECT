@@ -163,10 +163,10 @@ public class ProductController {
                                     schema = @Schema(implementation = ProductJSON.class)))
             })
     @Anonymous
-    public ResponseEntity<Serializable> deleteProduct(@PathParam("id") Integer id) {
+    public ResponseEntity<Serializable> deleteProduct(@PathParam("id") Integer id, HttpServletRequest request) {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
-        return Computation.computeAsync(() -> (Serializable)productService.deleteProduct(id), executorService)
+        return Computation.computeAsync(() -> (Serializable)productService.deleteProduct(id, smartLocaleResolver.resolveLocale(request)), executorService)
                 .thenApplyAsync(Response::created, executorService)
                 .exceptionally(error -> ExceptionHandler.handleException((CompletionException) error))
                 .join();

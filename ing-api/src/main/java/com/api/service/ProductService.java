@@ -60,7 +60,9 @@ public class ProductService {
     }
 
     @Transactional
-    public JsonResponse deleteProduct(Integer productId) {
+    public JsonResponse deleteProduct(Integer productId, Locale locale) {
+        if(!productRepository.existsById(productId))
+            throw new ApiException(Messages.get("PRODUCT.NOT.EXIST", locale), HTTPCustomStatus.NOT_FOUND);
         productRepository.deleteById(productId);
         return new JsonResponse()
                 .with("Status", "ok")
