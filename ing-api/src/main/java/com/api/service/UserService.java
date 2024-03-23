@@ -17,6 +17,8 @@ import com.internationalization.Messages;
 import com.util.enums.HTTPCustomStatus;
 import com.util.exceptions.ApiException;
 //import org.jboss.weld.util.collections.ImmutableMap;
+import com.util.web.JsonResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -36,13 +39,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final EmailManager emailManager;
+    private final PermissionRepository permissionRepository;
+    private final UserPermissionRepository userPermissionRepository;
 
-    @Autowired
-    public UserService(UserRepository userRepository, EmailManager emailManager) {
-
-        this.userRepository = userRepository;
-        this.emailManager = emailManager;
-    }
 
     @Transactional
     public UserJSON createUser(UserInput input, Locale locale) throws GeneralSecurityException {
@@ -118,5 +117,25 @@ public class UserService {
     public List<User> loadAll() {
         return userRepository.findAll();
     }
+
+    @Transactional
+    public JsonResponse assignPermission(AssignationInput input, Locale locale) {
+        final User user = userRepository.findByUserKey(input.getSourceKey()).orElseThrow(
+                () -> new ApiException(Messages.get("USER.NOT.EXIST", locale), HTTPCustomStatus.UNAUTHORIZED)
+        );
+
+        Permission permission = permissionRepository.findById(input.getDestinationKey()).orElseThrow(
+                () -> new ApiException(Messages.get("PERMISSION.NOT.EXIST", locale), HTTPCustomStatus.NOT_FOUND)
+        );
+
+        UserPermission userPermission = new UserPermission(user, permission);
+        userPermissionRepository.save(userPermission);
+
+        return new JsonResponse()
+                .with("Status", "ok")
+                .with("message", "Permission was successfully assigned!")
+                .done();
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.api.controller;
 
 import com.api.config.Anonymous;
+import com.api.model.AssignationInput;
 import com.api.model.UserInput;
 import com.api.output.Response;
 import com.api.output.UserJSON;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.Serial;
 import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
@@ -102,5 +104,23 @@ public class UserController {
     private Serializable loadUser(String email, Locale language) throws ApiException {
         return userService.loadUser(email, language);
     }
+
+    @PostMapping(value = "user/assign/permission", consumes = {"application/json"}, produces = {"application/json"})
+    @Operation(summary = "Assign permission user",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Return user if successfully added",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserJSON.class)))
+            })
+    @Anonymous
+    public ResponseEntity<Serializable> createUser(@RequestBody @Valid AssignationInput assignationInput, HttpServletRequest request) throws GeneralSecurityException {
+
+        ExecutorService executorService = ExecutorsProvider.getExecutorService();
+        return Computation.computeAsync(() -> (Serializable)userService.assignPermission(assignationInput, smartLocaleResolver.resolveLocale(request)), executorService)
+                .thenApplyAsync(Response::created, executorService)
+                .exceptionally(error -> ExceptionHandler.handleException((CompletionException) error))
+                .join();
+    }
+
 
 }
