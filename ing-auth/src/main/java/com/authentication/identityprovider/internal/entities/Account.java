@@ -52,6 +52,8 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<AccountPermission> permissions;
 
+    @OneToMany(mappedBy = "account")
+    private List<AccountRole> roles;
 
     public Account(String email,  String userKey,String firstName, String lastName,  String phone) {
         this.email = email;
