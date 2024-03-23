@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,15 +47,13 @@ public class RoleController {
 
 
     @GetMapping(value = "roles", produces = {"application/json"})
-    @Anonymous
+    @PreAuthorize("hasRole('administrator')")
     @Operation(summary = "Load all roles",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Return the list of all roles",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = RoleJSON.class)))
             })
-//    @RolesAllowed({"visitor", "administrator"})
-//    @PreAuthorize("hasAnyRole(@privilegeService.getPrivilegeRoles(\"LOAD.USER\")) AND hasAnyAuthority('PERMISSION_read:role', 'PERMISSION_edit:role')")
     public ResponseEntity<Serializable> loadAll(@RequestHeader(name = "Authorization", required = false) String authorization,
                                              HttpServletRequest request) {
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
@@ -71,7 +70,7 @@ public class RoleController {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = RoleJSON.class)))
             })
-    @Anonymous
+    @PreAuthorize("hasRole('administrator')")
     public ResponseEntity<Serializable> createRole(@RequestBody @Valid RoleInput roleInput, HttpServletRequest request) throws GeneralSecurityException {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
@@ -88,7 +87,7 @@ public class RoleController {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = RoleJSON.class)))
             })
-    @Anonymous
+    @PreAuthorize("hasRole('administrator')")
     public ResponseEntity<Serializable> assignPermission(@RequestBody @Valid AssignationInput assignationInput, HttpServletRequest request) throws GeneralSecurityException {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();

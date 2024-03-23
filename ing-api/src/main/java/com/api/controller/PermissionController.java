@@ -1,6 +1,5 @@
 package com.api.controller;
 
-import com.api.config.Anonymous;
 import com.api.model.PermissionInput;
 import com.api.output.PermissionJSON;
 import com.api.output.Response;
@@ -8,7 +7,6 @@ import com.api.service.PermissionService;
 import com.exception.ExceptionHandler;
 import com.util.async.Computation;
 import com.util.async.ExecutorsProvider;
-import com.util.web.SmartLocaleResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,15 +42,13 @@ public class PermissionController {
 
 
     @GetMapping(value = "permissions", produces = {"application/json"})
-    @Anonymous
+    @PreAuthorize("hasRole('administrator')")
     @Operation(summary = "Load all permissions",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Return the list of all permissions",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = PermissionJSON.class)))
             })
-//    @RolesAllowed({"visitor", "administrator"})
-//    @PreAuthorize("hasAnyRole(@privilegeService.getPrivilegeRoles(\"LOAD.USER\")) AND hasAnyAuthority('PERMISSION_read:permission', 'PERMISSION_edit:permission')")
     public ResponseEntity<Serializable> loadAll(@RequestHeader(name = "Authorization", required = false) String authorization,
                                              HttpServletRequest request) {
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
@@ -68,7 +65,7 @@ public class PermissionController {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = PermissionJSON.class)))
             })
-    @Anonymous
+    @PreAuthorize("hasRole('administrator')")
     public ResponseEntity<Serializable> createPermission(@RequestBody @Valid PermissionInput permissionInput, HttpServletRequest request) throws GeneralSecurityException {
 
         ExecutorService executorService = ExecutorsProvider.getExecutorService();
