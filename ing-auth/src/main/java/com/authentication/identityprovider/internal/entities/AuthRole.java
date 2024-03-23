@@ -18,15 +18,8 @@ public class AuthRole {
     @Column(name = "role_key", nullable = false, unique = true)
     private String roleKey;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "action", nullable = false)
-    private String action;
-
-    @Column(name = "subject", nullable = false)
-    private String subject;
-
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @PrePersist
     private void generateId() {
